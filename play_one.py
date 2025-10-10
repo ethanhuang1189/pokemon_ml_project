@@ -20,7 +20,7 @@ async def main():
     #    server_configuration=ShowdownServerConfiguration,
     #)
     print("Starting Battle\n")
-    await Bot_Naila.battle_against(second_player, n_battles=100)
+    await Bot_Naila.battle_against(second_player, n_battles=10)
     #await p1.battle_against(p2, n_challenges=1)
     #await p1.complete_current_battle()
     #for battle_tag, battle in p1.battles.items():
