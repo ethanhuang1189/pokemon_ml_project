@@ -1,0 +1,418 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background-image: url('noctali-5-scaled.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #ffffff;
+}
+
+/* Dark overlay to make text more readable */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 15, 35, 0.75);
+    z-index: -1;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section {
+    margin-bottom: 50px;
+}
+
+section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #4a9eff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    padding-bottom: 12px;
+    border-bottom: 3px solid #1e5a9e;
+}
+
+/* Bot Grid */
+.bot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 25px;
+}
+
+.bot-card {
+    background: rgba(20, 40, 80, 0.9);
+    border-radius: 0;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.bot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(74, 158, 255, 0.4);
+    border-color: #4a9eff;
+}
+
+.bot-card.selected {
+    border-color: #4a9eff;
+    background: rgba(30, 90, 158, 0.9);
+    box-shadow: 0 0 20px rgba(74, 158, 255, 0.6);
+}
+
+.bot-card h3 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.bot-card p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Battle Configuration */
+.config-form {
+    background: rgba(20, 40, 80, 0.9);
+    padding: 30px;
+    border-radius: 0;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+.form-group p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid rgba(74, 158, 255, 0.4);
+    border-radius: 0;
+    font-size: 1.05rem;
+    transition: all 0.3s;
+    background: rgba(10, 20, 40, 0.7);
+    color: #ffffff;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4a9eff;
+    box-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 14px 35px;
+    border: none;
+    border-radius: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1e5a9e 0%, #2d7dd2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(30, 90, 158, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(74, 158, 255, 0.6);
+}
+
+.btn-secondary {
+    background: rgba(60, 80, 120, 0.8);
+    color: #ffffff;
+    border: 2px solid rgba(74, 158, 255, 0.4);
+}
+
+.btn-secondary:hover {
+    background: rgba(80, 100, 140, 0.9);
+    border-color: #4a9eff;
+}
+
+/* Battle Viewer */
+.battle-viewer {
+    margin-bottom: 50px;
+}
+
+.iframe-container {
+    background: rgba(20, 40, 80, 0.9);
+    padding: 15px;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+#battleIframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    display: block;
+}
+
+/* Battle Progress */
+.progress-container {
+    background: rgba(20, 40, 80, 0.9);
+    padding: 30px;
+    border-radius: 0;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.battle-info {
+    margin-bottom: 25px;
+}
+
+.battle-info p {
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.replay-link {
+    color: #4a9eff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 5px 15px;
+    background: rgba(74, 158, 255, 0.2);
+    border: 2px solid #4a9eff;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.replay-link:hover {
+    background: rgba(74, 158, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.battle-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stat {
+    background: rgba(10, 20, 40, 0.7);
+    padding: 25px;
+    border-radius: 0;
+    text-align: center;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+}
+
+.stat-label {
+    display: block;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.stat-value {
+    display: inline-block;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #4a9eff;
+}
+
+/* Battle Log */
+.log-container {
+    background: rgba(20, 40, 80, 0.9);
+    padding: 25px;
+    border-radius: 0;
+    max-height: 450px;
+    overflow-y: auto;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.log-entry {
+    background: rgba(10, 20, 40, 0.7);
+    padding: 18px;
+    border-radius: 0;
+    margin-bottom: 12px;
+    border-left: 4px solid #4a9eff;
+}
+
+.log-entry.error {
+    border-left-color: #ff4a4a;
+}
+
+.log-entry.success {
+    border-left-color: #4aff88;
+}
+
+.log-entry .timestamp {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 6px;
+}
+
+.log-entry .message {
+    font-size: 1.05rem;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Battle History */
+.history-container {
+    background: rgba(20, 40, 80, 0.9);
+    padding: 25px;
+    border-radius: 0;
+    max-height: 350px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    border: 2px solid rgba(74, 158, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.history-item {
+    background: rgba(10, 20, 40, 0.7);
+    padding: 18px;
+    border-radius: 0;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #4a9eff;
+}
+
+.history-item.completed {
+    border-left-color: #4aff88;
+}
+
+.history-item.error {
+    border-left-color: #ff4a4a;
+}
+
+.history-item.battling {
+    border-left-color: #ffa84a;
+}
+
+.no-battles {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 25px;
+    font-size: 1.1rem;
+}
+
+/* Scrollbar Styling */
+.log-container::-webkit-scrollbar,
+.history-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.log-container::-webkit-scrollbar-track,
+.history-container::-webkit-scrollbar-track {
+    background: rgba(10, 20, 40, 0.5);
+    border-radius: 0;
+}
+
+.log-container::-webkit-scrollbar-thumb,
+.history-container::-webkit-scrollbar-thumb {
+    background: #1e5a9e;
+    border-radius: 0;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover,
+.history-container::-webkit-scrollbar-thumb:hover {
+    background: #4a9eff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.5rem;
+    }
+
+    .bot-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .battle-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}

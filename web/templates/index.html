@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Battle Arena</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Pokemon Battle Arena</h1>
+        <p class="subtitle">Bot vs Bot Battles</p>
+    </header>
+
+    <main>
+        <!-- Bot Selection Section -->
+        <section class="bot-selection" id="botSelection">
+            <h2>Select Your Bot</h2>
+            <div class="bot-grid" id="botGrid">
+                <!-- Bots will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Opponent Selection Section -->
+        <section class="opponent-selection" id="opponentSelection" style="display: none;">
+            <h2>Select Opponent Bot</h2>
+            <div class="bot-grid" id="opponentGrid">
+                <!-- Opponent bots will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Battle Configuration -->
+        <section class="battle-config" id="battleConfig" style="display: none;">
+            <h2>Battle Configuration</h2>
+            <div class="config-form">
+                <div class="form-group">
+                    <p><strong>Your Bot:</strong> <span id="selectedBotName"></span></p>
+                    <p><strong>Opponent:</strong> <span id="selectedOpponentName"></span></p>
+                </div>
+                <div class="form-group">
+                    <label for="numBattles">Number of Battles:</label>
+                    <input type="number" id="numBattles" value="1" min="1" max="10">
+                </div>
+                <div class="button-group">
+                    <button onclick="startBattle()" class="btn btn-primary">Start Battle</button>
+                    <button onclick="cancelBattle()" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Battle Viewer -->
+        <section class="battle-viewer" id="battleViewer" style="display: none;">
+            <h2>Live Battle</h2>
+            <div class="iframe-container">
+                <iframe id="battleIframe" src="" frameborder="0"></iframe>
+            </div>
+        </section>
+
+        <!-- Battle Progress -->
+        <section class="battle-progress" id="battleProgress" style="display: none;">
+            <h2>Battle Result</h2>
+            <div class="progress-container">
+                <div class="battle-info">
+                    <p><strong>Bot:</strong> <span id="battleBotName"></span></p>
+                    <p><strong>Opponent:</strong> <span id="battleOpponent"></span></p>
+                    <p><strong>Status:</strong> <span id="battleStatus">Battle in progress...</span></p>
+                    <p id="replayLinkContainer" style="display: none;">
+                        <strong>Replay:</strong> <a id="replayLink" href="#" target="_blank" class="replay-link">View Replay</a>
+                    </p>
+                </div>
+                <div class="battle-stats">
+                    <div class="stat">
+                        <span class="stat-label">Wins</span>
+                        <span class="stat-value" id="battleWins">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Losses</span>
+                        <span class="stat-value" id="battleLosses">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value" id="battleTotal">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Battle History -->
+        <section class="battle-history">
+            <h2>Battle History</h2>
+            <div class="history-container" id="historyContainer">
+                <p class="no-battles">No battles yet</p>
+            </div>
+            <button onclick="refreshHistory()" class="btn btn-secondary">Refresh</button>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
