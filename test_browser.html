@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Battle API</title>
+</head>
+<body>
+    <h1>Battle API Test</h1>
+    <button onclick="testBattle()">Start Test Battle</button>
+    <div id="output"></div>
+
+    <script>
+        async function testBattle() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Starting battle...</p>';
+
+            try {
+                // Start battle
+                const response = await fetch('http://localhost:5000/api/battle/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bot_type: 'random',
+                        opponent_type: 'maxdamage',
+                        n_battles: 1
+                    })
+                });
+
+                const data = await response.json();
+                output.innerHTML += `<p>Battle started: ${data.battle_id}</p>`;
+
+                const battleId = data.battle_id;
+
+                // Poll status
+                for (let i = 0; i < 10; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    const statusResp = await fetch(`http://localhost:5000/api/battle/${battleId}/status`);
+                    const status = await statusResp.json();
+
+                    output.innerHTML += `<p>[${i * 0.5}s] Status: ${status.status}, URL: ${status.battle_url || 'none'}, Wins: ${status.bot_wins}</p>`;
+
+                    if (status.battle_url) {
+                        output.innerHTML += `<p><strong>BATTLE LINK: <a href="${status.battle_url}" target="_blank">${status.battle_url}</a></strong></p>`;
+                    }
+
+                    if (status.status === 'completed') {
+                        output.innerHTML += `<p><strong>Battle completed!</strong></p>`;
+                        break;
+                    }
+                }
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
