@@ -244,6 +244,30 @@
             font-weight: bold;
         }
 
+        header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        header img.logo {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        header .header-text {
+            flex: 1;
+        }
+
+        header .header-text h1 {
+            margin-bottom: 5px;
+        }
+
+        header .header-text .subtitle {
+            margin-bottom: 0;
+        }
+
         footer {
             border-top: 2px solid #000;
             padding: 20px 0;
@@ -271,15 +295,16 @@
         <header>
             <h1>Machine Learning Pokemon Battle Bot</h1>
             <p class="subtitle">A Personal Project Exploring AI and Competitive Pokemon</p>
-            <div class="tech-stack">
-                <span class="tech-tag">Python</span>
-                <span class="tech-tag">poke-env</span>
-                <span class="tech-tag">Pokemon Showdown</span>
-                <span class="tech-tag">Machine Learning (Planned)</span>
-                <span class="tech-tag">Flask</span>
-                <span class="tech-tag">Data Analysis</span>
-            </div>
         </header>
+
+        <div class="tech-stack">
+            <span class="tech-tag">Python</span>
+            <span class="tech-tag">poke-env</span>
+            <span class="tech-tag">Pokemon Showdown</span>
+            <span class="tech-tag">Machine Learning (Planned)</span>
+            <span class="tech-tag">Flask</span>
+            <span class="tech-tag">Data Analysis</span>
+        </div>
 
         <div class="section" id="about">
             <h2>About This Project</h2>
@@ -298,6 +323,9 @@
 
         <div class="section" id="battle-rules">
             <h2>Pokemon Battle Rules</h2>
+
+            <img src="showdown_logo.jpg" alt="Pokemon Showdown" style="width: 100%; max-width: 600px; margin: 20px 0; border: 1px solid #000;">
+
             <p>Pokemon battles in Gen 8 Random Battle format involve turn based combat where players control teams of 6 randomly generated Pokemon.
             Only one Pokemon is active at a time, and the goal is to knock out all opponent Pokemon.</p>
 
