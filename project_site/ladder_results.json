@@ -1,0 +1,17 @@
+{
+  "custom_strategy_v1": {
+    "wins": 0,
+    "losses": 25,
+    "win_rate": 0.0
+  },
+  "custom_strategy_v2": {
+    "wins": 10,
+    "losses": 15,
+    "win_rate": 40.0
+  },
+  "custom_strategy_combined": {
+    "wins": 10,
+    "losses": 40,
+    "win_rate": 20.0
+  }
+}

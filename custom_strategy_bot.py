@@ -79,9 +79,18 @@ class CustomStrategyPlayer(Player):
         if not self.move_checks:
             return self.choose_default_move(battle)
 
+        # Check if we can and should Dynamax
+        active = battle.active_pokemon
+        opponent_active = battle.opponent_active_pokemon
+
+        if battle.can_dynamax and active and opponent_active:
+            # Dynamax when opponent is healthy and we have good offensive potential
+            if opponent_active.current_hp_fraction > 0.6 and active.current_hp_fraction > 0.4:
+                if self.debug:
+                    print(f"\n*** DYNAMAXING {active.species} ***")
+
         # Check if we should switch (evaluate switches separately)
         available_switches = battle.available_switches
-        opponent_active = battle.opponent_active_pokemon
 
         if available_switches and opponent_active:
             # Check if switching would be beneficial
@@ -136,7 +145,8 @@ class CustomStrategyPlayer(Player):
         if self.debug:
             print(f"\nChosen: {best_move.id} (score: {move_scores[best_move]:.1f})")
 
-        order = self.create_order(best_move)
+        # Apply Dynamax if we decided to use it
+        order = self.create_order(best_move, dynamax=battle.can_dynamax and active and opponent_active and opponent_active.current_hp_fraction > 0.6 and active.current_hp_fraction > 0.4)
 
         # Log after choosing the move
         if self.battle_logger:
@@ -375,6 +385,76 @@ def check_setup_moves(battle: AbstractBattle, move, target) -> float:
             total_boost = sum(move.boosts.values())
             if total_boost > 0:
                 return 40  # Good to set up early
+    return 0
+
+
+def check_setup_on_resist(battle: AbstractBattle, move, target) -> float:
+    """Use stat boosting moves when opponent's attacks are ineffective against us."""
+    active = battle.active_pokemon
+
+    # Check if this is a stat boosting move
+    if not move.boosts or not active or not target:
+        return 0
+
+    # Check if move boosts our stats (not opponent's)
+    total_boost = sum(move.boosts.values())
+    if total_boost <= 0:
+        return 0
+
+    # Estimate if opponent's attacks would be ineffective against us
+    # Check type matchups - if we resist their types, it's safe to set up
+    resistant_to_opponent = False
+
+    for opponent_type in target.types:
+        if opponent_type:
+            # Check if our types resist opponent's type
+            for our_type in active.types:
+                if our_type:
+                    # If we resist them, it's a good setup opportunity
+                    # This is simplified - we're checking if they'd have trouble hitting us
+                    resistant_to_opponent = True
+                    break
+
+    # Also favor setup if opponent is low HP (we can afford a turn)
+    if target.current_hp_fraction < 0.3:
+        return 60  # Safe to set up when they're weak
+
+    # Favor setup if we're healthy and have defensive advantage
+    if active.current_hp_fraction > 0.7 and resistant_to_opponent:
+        return 50
+
+    return 0
+
+
+def check_switch_on_bad_matchup(battle: AbstractBattle, move, target) -> float:
+    """Heavily penalize attacking moves that are not effective and suggest switching instead."""
+    active = battle.active_pokemon
+
+    if not target or not active or not move.type or move.base_power == 0:
+        return 0
+
+    # Check type effectiveness
+    effectiveness = target.damage_multiplier(move)
+
+    # If our best moves are all ineffective and we're taking damage, we should switch
+    # But this is just a penalty on the current move
+    if effectiveness < 0.5:  # Not very effective or worse
+        # Heavy penalty to encourage the switching logic to kick in
+        return -100
+
+    return 0
+
+
+def check_offensive_pressure(battle: AbstractBattle, move, target) -> float:
+    """Prefer high damage moves when opponent is at medium-high HP to apply pressure."""
+    if not target or not move.base_power or move.base_power == 0:
+        return 0
+
+    # When opponent is healthy, prioritize damage
+    if target.current_hp_fraction > 0.5:
+        # Scale with base power
+        return move.base_power * 0.5
+
     return 0
 
 

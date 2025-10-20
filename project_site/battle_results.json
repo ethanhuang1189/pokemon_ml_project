@@ -1,0 +1,14 @@
+{
+  "random_vs_maxdamage": {
+    "p1_wins": 22,
+    "p2_wins": 28
+  },
+  "random_vs_custom": {
+    "p1_wins": 17,
+    "p2_wins": 33
+  },
+  "maxdamage_vs_custom": {
+    "p1_wins": 24,
+    "p2_wins": 26
+  }
+}

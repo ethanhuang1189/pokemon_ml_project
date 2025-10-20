@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Battle Arena</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: url('/static/noctali-5-scaled.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .dropdown-container {
+            position: relative;
+            width: 150px;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 12px 16px;
+            background: #4a4a4a;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .dropdown-button:hover {
+            background: #5a5a5a;
+        }
+
+        .dropdown-button.active {
+            background: #5a5a5a;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .dropdown-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #4a4a4a;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .dropdown-menu.active {
+            max-height: 200px;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item:hover {
+            background: #5a5a5a;
+        }
+
+        .start-button {
+            padding: 12px 30px;
+            background: #007aff;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .start-button:hover {
+            background: #0051d5;
+        }
+
+        .start-button:disabled {
+            background: #3a3a3a;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .winner {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .winner h2 {
+            color: #4caf50;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .winner p {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .battle-log-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .battle-log-header {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .turn-section {
+            margin-bottom: 20px;
+        }
+
+        .turn-header {
+            color: #007aff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(0, 122, 255, 0.3);
+        }
+
+        .turn-event {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #fff;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #007aff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            border-radius: 8px;
+            color: #f44336;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pokemon Battle Arena</h1>
+
+        <div class="controls">
+            <div class="dropdown-container">
+                <button class="dropdown-button" id="bot1-button">
+                    <span id="bot1-text">Bot 1</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="bot1-menu">
+                    <div class="dropdown-item" data-value="random">Random</div>
+                    <div class="dropdown-item" data-value="maxdamage">Max Damage</div>
+                    <div class="dropdown-item" data-value="custom">Custom Strategy</div>
+                </div>
+            </div>
+
+            <div class="dropdown-container">
+                <button class="dropdown-button" id="bot2-button">
+                    <span id="bot2-text">Bot 2</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="bot2-menu">
+                    <div class="dropdown-item" data-value="random">Random</div>
+                    <div class="dropdown-item" data-value="maxdamage">Max Damage</div>
+                    <div class="dropdown-item" data-value="custom">Custom Strategy</div>
+                </div>
+            </div>
+
+            <button class="start-button" id="start-button">Start Battle</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Battle in progress...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="results" id="results">
+            <div class="winner">
+                <h2>Winner</h2>
+                <p id="winner-text"></p>
+            </div>
+
+            <div class="battle-log-container">
+                <div class="battle-log-header">Battle Log</div>
+                <div id="battle-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let bot1Selected = null;
+        let bot2Selected = null;
+
+        // Dropdown functionality
+        function setupDropdown(buttonId, menuId, textId, botNumber) {
+            const button = document.getElementById(buttonId);
+            const menu = document.getElementById(menuId);
+            const text = document.getElementById(textId);
+
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close other dropdowns
+                document.querySelectorAll('.dropdown-menu').forEach(m => {
+                    if (m !== menu) m.classList.remove('active');
+                });
+                document.querySelectorAll('.dropdown-button').forEach(b => {
+                    if (b !== button) b.classList.remove('active');
+                });
+
+                menu.classList.toggle('active');
+                button.classList.toggle('active');
+            });
+
+            menu.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.dataset.value;
+                    const label = item.textContent;
+
+                    text.textContent = label;
+                    menu.classList.remove('active');
+                    button.classList.remove('active');
+
+                    if (botNumber === 1) {
+                        bot1Selected = value;
+                    } else {
+                        bot2Selected = value;
+                    }
+
+                    updateStartButton();
+                });
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.dropdown-button').forEach(b => b.classList.remove('active'));
+        });
+
+        setupDropdown('bot1-button', 'bot1-menu', 'bot1-text', 1);
+        setupDropdown('bot2-button', 'bot2-menu', 'bot2-text', 2);
+
+        function updateStartButton() {
+            const startButton = document.getElementById('start-button');
+            startButton.disabled = !bot1Selected || !bot2Selected;
+        }
+
+        // Start battle
+        document.getElementById('start-button').addEventListener('click', async () => {
+            if (!bot1Selected || !bot2Selected) return;
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const error = document.getElementById('error');
+            const startButton = document.getElementById('start-button');
+
+            // Hide previous results and errors
+            results.classList.remove('show');
+            error.classList.remove('show');
+
+            // Show loading
+            loading.classList.add('show');
+            startButton.disabled = true;
+
+            try {
+                const response = await fetch('/battle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bot1: bot1Selected,
+                        bot2: bot2Selected
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Battle failed');
+                }
+
+                // Display results
+                document.getElementById('winner-text').textContent = data.winner;
+
+                const battleLog = document.getElementById('battle-log');
+                battleLog.innerHTML = '';
+
+                if (data.battle_log && data.battle_log.length > 0) {
+                    data.battle_log.forEach(turn => {
+                        const turnSection = document.createElement('div');
+                        turnSection.className = 'turn-section';
+
+                        const turnHeader = document.createElement('div');
+                        turnHeader.className = 'turn-header';
+                        turnHeader.textContent = `Turn ${turn.turn_number}`;
+                        turnSection.appendChild(turnHeader);
+
+                        turn.events.forEach(event => {
+                            const eventDiv = document.createElement('div');
+                            eventDiv.className = 'turn-event';
+                            eventDiv.textContent = event;
+                            turnSection.appendChild(eventDiv);
+                        });
+
+                        battleLog.appendChild(turnSection);
+                    });
+                } else {
+                    battleLog.innerHTML = '<div class="turn-event">No battle log available</div>';
+                }
+
+                results.classList.add('show');
+            } catch (err) {
+                error.textContent = err.message;
+                error.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                startButton.disabled = false;
+            }
+        });
+
+        // Initialize
+        updateStartButton();
+    </script>
+</body>
+</html>

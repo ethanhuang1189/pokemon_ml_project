@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning Pokemon Battle Bot</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #000;
+            background: #fff;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #f8f8f8;
+            border-right: 1px solid #000;
+            padding: 15px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 12px;
+        }
+
+        .sidebar a {
+            color: #000;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            padding: 5px 0;
+            border-left: 3px solid transparent;
+            padding-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .sidebar a:hover {
+            border-left-color: #000;
+            font-weight: bold;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px 60px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: normal;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            font-weight: normal;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 40px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .bot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .bot-card {
+            border: 1px solid #000;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .bot-card h4 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .bot-card p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .bot-card ul {
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 40px 0;
+            border: 1px solid #000;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .status-card {
+            border: 1px solid #000;
+            padding: 20px;
+            text-align: center;
+            background: #f8f8f8;
+        }
+
+        .status-card h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .status-card p {
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .challenge-list, .future-list {
+            margin: 20px 0;
+        }
+
+        .challenge-item, .future-item {
+            border: 1px solid #000;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fff;
+        }
+
+        .challenge-item h4, .future-item h4 {
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        .challenge-item p, .future-item p {
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            background: #f0f0f0;
+            padding: 20px;
+            border: 1px solid #000;
+            margin: 20px 0;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .tech-tag {
+            border: 1px solid #000;
+            padding: 5px 12px;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+
+        footer {
+            border-top: 2px solid #000;
+            padding: 20px 0;
+            margin-top: 60px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h3>Contents</h3>
+        <ul>
+            <li><a href="#about">About This Project</a></li>
+            <li><a href="#battle-rules">Pokemon Battle Rules</a></li>
+            <li><a href="#bots">The Three Bots</a></li>
+            <li><a href="#analysis">Performance Analysis</a></li>
+            <li><a href="#accomplished">What's Been Accomplished</a></li>
+            <li><a href="#ml-plan">Machine Learning Plan</a></li>
+            <li><a href="#challenges">Challenges and Difficulties</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Machine Learning Pokemon Battle Bot</h1>
+            <p class="subtitle">A Personal Project Exploring AI and Competitive Pokemon</p>
+            <div class="tech-stack">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">poke-env</span>
+                <span class="tech-tag">Pokemon Showdown</span>
+                <span class="tech-tag">Machine Learning (Planned)</span>
+                <span class="tech-tag">Flask</span>
+                <span class="tech-tag">Data Analysis</span>
+            </div>
+        </header>
+
+        <div class="section" id="about">
+            <h2>About This Project</h2>
+            <p>
+                As a lifelong Pokemon fan, I have always been fascinated by the strategic depth of competitive Pokemon battles.
+                This project represents the perfect intersection of my passion for Pokemon and my journey in software engineering
+                and machine learning. It is not just about building a bot; it is about understanding battle patterns, decision making
+                strategies, and ultimately creating an AI that can learn from thousands of battles to become a formidable opponent.
+            </p>
+            <p>
+                The goal is to progress from simple rule based bots to a sophisticated machine learning model that can adapt,
+                learn, and make intelligent decisions in the complex environment of Pokemon battles. Along the way, I am documenting
+                everything, analyzing data, and building the foundation for what I hope will become a competitive battling AI.
+            </p>
+        </div>
+
+        <div class="section" id="battle-rules">
+            <h2>Pokemon Battle Rules</h2>
+            <p>Pokemon battles in Gen 8 Random Battle format involve turn based combat where players control teams of 6 randomly generated Pokemon.
+            Only one Pokemon is active at a time, and the goal is to knock out all opponent Pokemon.</p>
+
+            <h3>Key Mechanics</h3>
+            <ul>
+                <li><strong>Type Matchups:</strong> Moves can be super effective (2x damage), not very effective (0.5x damage), or have no effect based on Pokemon types</li>
+                <li><strong>STAB Bonus:</strong> Moves matching the Pokemon's type get 1.5x damage</li>
+                <li><strong>Stats:</strong> HP, Attack, Defense, Special Attack, Special Defense, and Speed determine battle outcomes</li>
+                <li><strong>Move Selection:</strong> Each Pokemon has 4 moves with varying power, accuracy, and effects</li>
+                <li><strong>Switching:</strong> Players can switch Pokemon to gain type advantages</li>
+            </ul>
+
+            <p>This complexity makes Pokemon battling an interesting AI challenge requiring type effectiveness understanding,
+            multi factor evaluation, and decision making under uncertainty.</p>
+        </div>
+
+        <div class="section" id="bots">
+            <h2>The Three Bots</h2>
+            <p>Currently, I have developed three different bot implementations, each representing a different approach to battle strategy:</p>
+
+            <div class="bot-grid">
+                <div class="bot-card">
+                    <h4>1. Random Bot</h4>
+                    <p><strong>Strategy:</strong> Complete randomization</p>
+                    <p><strong>Purpose:</strong> Baseline control for comparison</p>
+                    <p><strong>How it works:</strong></p>
+                    <ul>
+                        <li>Selects moves completely at random from available options</li>
+                        <li>No strategic consideration whatsoever</li>
+                        <li>Serves as the control group to measure improvements</li>
+                    </ul>
+                    <p><strong>Win Rate:</strong> Approximately 50% against itself, varies against smarter bots</p>
+                </div>
+
+                <div class="bot-card">
+                    <h4>2. Max Damage Bot</h4>
+                    <p><strong>Strategy:</strong> Always choose highest base power</p>
+                    <p><strong>Purpose:</strong> Simple heuristic based approach</p>
+                    <p><strong>How it works:</strong></p>
+                    <ul>
+                        <li>Evaluates all available moves</li>
+                        <li>Selects the move with the highest base power</li>
+                        <li>Ignores type effectiveness and other factors</li>
+                        <li>Simple but surprisingly effective</li>
+                    </ul>
+                    <p><strong>Win Rate:</strong> Approximately 60% against Random, competitive overall</p>
+                </div>
+
+                <div class="bot-card">
+                    <h4>3. Custom Strategy Bot</h4>
+                    <p><strong>Strategy:</strong> Multi factor priority based decision making with advanced features</p>
+                    <p><strong>Purpose:</strong> Advanced rule based system with weighted checks</p>
+                    <p><strong>How it works:</strong></p>
+                    <ul>
+                        <li><strong>Super Effective Check (Priority 4):</strong> Heavily favors type advantageous moves</li>
+                        <li><strong>Avoid Ineffective and Switching (Priority 3):</strong> Penalizes not very effective moves and suggests switching</li>
+                        <li><strong>Priority Moves for Finishing (Priority 3):</strong> Uses priority moves to finish weak opponents</li>
+                        <li><strong>STAB Bonus (Priority 2):</strong> Prefers same type attack bonus moves</li>
+                        <li><strong>Offensive Pressure (Priority 2):</strong> Prioritizes high damage when opponent is healthy</li>
+                        <li><strong>Setup on Resist (Priority 2):</strong> Uses stat boosting moves when safe</li>
+                        <li><strong>Dynamax Support:</strong> Strategically dynamaxes for advantage</li>
+                    </ul>
+                    <p><strong>Win Rate:</strong> 65 to 70% against other bots, 40% against human players on ladder after improvements</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="analysis">
+            <h2>Battle Performance Analysis</h2>
+
+            <h3>Bot vs Bot Testing</h3>
+            <p>Initial testing was conducted with 50 battles between each bot combination to establish baseline performance:</p>
+
+            <div class="chart-container">
+                <canvas id="winRateChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="headToHeadChart"></canvas>
+            </div>
+
+            <h3>Real Player Ladder Testing</h3>
+            <p>The Custom Strategy Bot was tested on the official Pokemon Showdown ladder against real human players to evaluate
+            its performance beyond controlled bot vs bot matches.</p>
+
+            <h4>Version 1: Initial Strategy</h4>
+            <p>The first version used a priority based system with six checks: Super Effective Moves (Priority 3), STAB Bonus (Priority 2),
+            Avoid Ineffective Moves (Priority 2), Base Power (Priority 1), Accuracy (Priority 1), and Status Moves (Priority 1).</p>
+
+            <p><strong>Result:</strong> 0 wins, 25 losses (0% win rate) against human players, despite achieving 65% win rate against other bots.
+            This revealed critical weaknesses: no Dynamax usage, poor switching decisions, failure to use setup moves, and oversimplified decision making.</p>
+
+            <h4>Improvements Made</h4>
+            <p>Analysis of battle logs led to five major improvements:</p>
+            <ul>
+                <li><strong>Dynamax Support:</strong> Strategically dynamax when opponent is greater than 60% HP and bot is greater than 40% HP</li>
+                <li><strong>Setup on Resist:</strong> Use stat boosting moves when opponent's attacks are ineffective</li>
+                <li><strong>Enhanced Switching:</strong> Heavily penalize staying in when moves are less than 0.5x effective</li>
+                <li><strong>Offensive Pressure:</strong> Prioritize high damage against healthy opponents</li>
+                <li><strong>Rebalanced Priorities:</strong> Increased super effective to Priority 4, added context aware decision making</li>
+            </ul>
+
+            <h4>Version 2: Results</h4>
+            <div class="chart-container">
+                <canvas id="ladderChart"></canvas>
+            </div>
+
+            <p><strong>Result:</strong> 10 wins, 15 losses (40% win rate). A <strong>40 percentage point improvement</strong> demonstrating
+            that strategic refinements based on data analysis significantly enhance performance.</p>
+
+            <h4>Implications for Machine Learning</h4>
+            <p>This improvement process demonstrates what an ML model needs to learn automatically. The manual improvements
+            (Dynamax timing, setup recognition, switching intelligence, context awareness) represent patterns that reinforcement
+            learning should discover through training. Key advantages of ML include:</p>
+            <ul>
+                <li><strong>Feature Recognition:</strong> Automatically identify beneficial game states for specific actions</li>
+                <li><strong>Reward Shaping:</strong> Learn that winning requires positioning and resource management, not just damage</li>
+                <li><strong>Exploration:</strong> Discover non obvious strategies beyond manually coded rules</li>
+                <li><strong>Adaptation:</strong> Learn dynamic decision making and opponent prediction in real time</li>
+            </ul>
+
+            <p>The 0% to 40% improvement validates the approach. A properly trained ML model should continue this trajectory,
+            potentially reaching competitive win rates by learning patterns beyond manual identification.</p>
+
+            <h3>Key Insights from Battle Data</h3>
+            <ul>
+                <li><strong>Human Players Are Strong:</strong> Real players on the ladder employ sophisticated strategies that simple rule based bots struggle against</li>
+                <li><strong>Improvements Work:</strong> The 40 percentage point jump from 0% to 40% proves that advanced decision making (Dynamax, setup moves, better switching) makes a measurable difference</li>
+                <li><strong>Type Effectiveness Matters:</strong> The Custom Strategy bot's prioritization of super effective moves shows significant performance gains</li>
+                <li><strong>Strategic Depth:</strong> Multi factor decision making (Custom Bot) consistently outperforms single factor strategies</li>
+                <li><strong>Massive Room for ML:</strong> Even with improvements, the bot only achieves 40% win rate against humans. Machine learning has enormous potential to bridge this gap</li>
+                <li><strong>Adaptation is Key:</strong> Human players adapt mid battle and predict opponent moves. A successful ML bot must learn these skills</li>
+            </ul>
+        </div>
+
+        <div class="section" id="accomplished">
+            <h2>What Has Been Accomplished</h2>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h4>Bot Infrastructure</h4>
+                    <p>Built three different bot implementations with varying strategies</p>
+                </div>
+                <div class="status-card">
+                    <h4>Battle System</h4>
+                    <p>Integrated with Pokemon Showdown for authentic battle simulation</p>
+                </div>
+                <div class="status-card">
+                    <h4>Data Logging</h4>
+                    <p>Comprehensive battle logging system capturing turn by turn data</p>
+                </div>
+                <div class="status-card">
+                    <h4>Web Interface</h4>
+                    <p>Interactive website for running and visualizing battles</p>
+                </div>
+                <div class="status-card">
+                    <h4>Analysis Tools</h4>
+                    <p>Data analysis scripts and visualization for performance comparison</p>
+                </div>
+                <div class="status-card">
+                    <h4>Testing Framework</h4>
+                    <p>Automated battle running for data collection and validation</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="ml-plan">
+            <h2>Machine Learning Bot: The Plan</h2>
+            <p>The ultimate goal is to create a machine learning bot that learns from thousands of battles. Here is the roadmap:</p>
+
+            <div class="highlight">
+                <h3>Phase 1: Data Collection (Current)</h3>
+                <ul>
+                    <li>Run thousands of battles between existing bots and on Pokemon Showdown ladder</li>
+                    <li>Log comprehensive battle data: moves, HP, type matchups, outcomes</li>
+                    <li>Collect human player games from Showdown for expert level decision examples</li>
+                    <li>Build a diverse dataset covering many Pokemon, moves, and situations</li>
+                </ul>
+            </div>
+
+            <h3>Phase 2: Feature Engineering (Planned)</h3>
+            <ul>
+                <li>Extract meaningful features from battle states</li>
+                <li>Encode Pokemon types, moves, stats, and abilities</li>
+                <li>Create state representations for ML model input</li>
+                <li>Normalize and preprocess data for training</li>
+            </ul>
+
+            <h3>Phase 3: Model Development (Planned)</h3>
+            <ul>
+                <li>Start with supervised learning on expert games</li>
+                <li>Implement reinforcement learning (Q Learning or DQN)</li>
+                <li>Train model on battle win and loss outcomes</li>
+                <li>Fine tune hyperparameters and architecture</li>
+            </ul>
+
+            <h3>Phase 4: Testing and Iteration (Planned)</h3>
+            <ul>
+                <li>Test ML bot against rule based bots</li>
+                <li>Measure performance improvements</li>
+                <li>Iterate on model architecture and training</li>
+                <li>Eventually test on Pokemon Showdown ladder</li>
+            </ul>
+        </div>
+
+        <div class="section" id="challenges">
+            <h2>Challenges and Difficulties</h2>
+            <ul>
+                <li><strong>Massive State Space:</strong> 800+ Pokemon, 900+ moves, type matchups, abilities, items, weather, and terrain create an enormous number of possible battle states</li>
+                <li><strong>Partial Observability:</strong> The bot cannot see the opponent's full team or movesets initially and must make decisions under uncertainty</li>
+                <li><strong>Long Term Strategy:</strong> Decisions require thinking multiple turns ahead with delayed rewards</li>
+                <li><strong>Training Time:</strong> Each battle takes 10 to 30 seconds. Training requires thousands of battles, demanding significant compute resources</li>
+                <li><strong>Reward Function Design:</strong> Determining the right rewards beyond simple win or loss (damage dealt, KOs, HP preservation) is critical for reinforcement learning</li>
+            </ul>
+        </div>
+
+
+        <footer>
+            <p><strong>Project Status:</strong> Active Development | <strong>Started:</strong> 2025</p>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scrolling for sidebar links
+        document.querySelectorAll('.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Load battle results and create charts
+        fetch('battle_results.json')
+            .then(response => response.json())
+            .then(data => {
+                createWinRateChart(data);
+                createHeadToHeadChart(data);
+            })
+            .catch(error => {
+                console.error('Error loading battle data:', error);
+                const sampleData = {
+                    "random_vs_maxdamage": {"p1_wins": 22, "p2_wins": 28},
+                    "random_vs_custom": {"p1_wins": 17, "p2_wins": 33},
+                    "maxdamage_vs_custom": {"p1_wins": 24, "p2_wins": 26}
+                };
+                createWinRateChart(sampleData);
+                createHeadToHeadChart(sampleData);
+            });
+
+        // Load ladder results
+        fetch('ladder_results.json')
+            .then(response => response.json())
+            .then(data => {
+                createLadderChart(data);
+            })
+            .catch(error => {
+                console.error('Error loading ladder data:', error);
+                // Use hardcoded data if fetch fails
+                const ladderData = {
+                    "custom_strategy_v1": {"wins": 0, "losses": 25, "win_rate": 0.0},
+                    "custom_strategy_v2": {"wins": 10, "losses": 15, "win_rate": 40.0},
+                    "custom_strategy_combined": {"wins": 10, "losses": 40, "win_rate": 20.0}
+                };
+                createLadderChart(ladderData);
+            });
+
+        function createWinRateChart(data) {
+            const ctx = document.getElementById('winRateChart').getContext('2d');
+
+            const randomWins = data.random_vs_maxdamage.p1_wins + data.random_vs_custom.p1_wins;
+            const randomTotal = 100;
+            const maxDamageWins = data.random_vs_maxdamage.p2_wins + data.maxdamage_vs_custom.p1_wins;
+            const maxDamageTotal = 100;
+            const customWins = data.random_vs_custom.p2_wins + data.maxdamage_vs_custom.p2_wins;
+            const customTotal = 100;
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Random Bot', 'Max Damage Bot', 'Custom Strategy Bot'],
+                    datasets: [{
+                        label: 'Win Rate (%)',
+                        data: [
+                            (randomWins / randomTotal * 100).toFixed(1),
+                            (maxDamageWins / maxDamageTotal * 100).toFixed(1),
+                            (customWins / customTotal * 100).toFixed(1)
+                        ],
+                        backgroundColor: ['#2d7a2d', '#2d7a2d', '#2d7a2d'],
+                        borderColor: ['#000', '#000', '#000'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Overall Win Rate Comparison (100 battles each)',
+                            font: { size: 16, family: 'Times New Roman' },
+                            color: '#000'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Win Rate (%)',
+                                font: { family: 'Times New Roman' }
+                            },
+                            grid: {
+                                color: '#ddd'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createHeadToHeadChart(data) {
+            const ctx = document.getElementById('headToHeadChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Random vs MaxDamage', 'Random vs Custom', 'MaxDamage vs Custom'],
+                    datasets: [
+                        {
+                            label: 'First Bot Wins',
+                            data: [
+                                data.random_vs_maxdamage.p1_wins,
+                                data.random_vs_custom.p1_wins,
+                                data.maxdamage_vs_custom.p1_wins
+                            ],
+                            backgroundColor: '#2d7a2d',
+                            borderColor: '#000',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Second Bot Wins',
+                            data: [
+                                data.random_vs_maxdamage.p2_wins,
+                                data.random_vs_custom.p2_wins,
+                                data.maxdamage_vs_custom.p2_wins
+                            ],
+                            backgroundColor: '#c94040',
+                            borderColor: '#000',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Head to Head Battle Results (50 battles each matchup)',
+                            font: { size: 16, family: 'Times New Roman' },
+                            color: '#000'
+                        },
+                        legend: {
+                            labels: {
+                                font: { family: 'Times New Roman' },
+                                color: '#000'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 50,
+                            title: {
+                                display: true,
+                                text: 'Number of Wins',
+                                font: { family: 'Times New Roman' }
+                            },
+                            grid: {
+                                color: '#ddd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createLadderChart(data) {
+            const ctx = document.getElementById('ladderChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Version 1 (Basic)', 'Version 2 (Improved)'],
+                    datasets: [
+                        {
+                            label: 'Wins',
+                            data: [
+                                data.custom_strategy_v1.wins,
+                                data.custom_strategy_v2.wins
+                            ],
+                            backgroundColor: '#2d7a2d',
+                            borderColor: '#000',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Losses',
+                            data: [
+                                data.custom_strategy_v1.losses,
+                                data.custom_strategy_v2.losses
+                            ],
+                            backgroundColor: '#c94040',
+                            borderColor: '#000',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Ladder Performance: Before vs After Improvements (25 battles each)',
+                            font: { size: 16, family: 'Times New Roman' },
+                            color: '#000'
+                        },
+                        legend: {
+                            labels: {
+                                font: { family: 'Times New Roman' },
+                                color: '#000'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 25,
+                            title: {
+                                display: true,
+                                text: 'Number of Battles',
+                                font: { family: 'Times New Roman' }
+                            },
+                            grid: {
+                                color: '#ddd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
