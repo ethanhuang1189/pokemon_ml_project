@@ -1,9 +1,3 @@
-"""
-Custom Strategy Bot for LADDER battles on official Pokemon Showdown.
-
-This version connects to the official Pokemon Showdown server and plays on the ladder
-against real players, logging all battle data.
-"""
 import asyncio
 from poke_env import ShowdownServerConfiguration, AccountConfiguration
 from custom_strategy_bot import (
@@ -15,8 +9,6 @@ from custom_strategy_bot import (
     check_high_accuracy,
     check_status_moves,
     check_avoid_ineffective,
-    check_preserve_pp,
-    check_setup_moves,
     check_setup_on_resist,
     check_switch_on_bad_matchup,
     check_offensive_pressure,
@@ -24,18 +16,8 @@ from custom_strategy_bot import (
 
 
 async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
-    """
-    Run custom strategy bot on the official Pokemon Showdown ladder.
-
-    Args:
-        username: Your Pokemon Showdown username
-        password: Your Pokemon Showdown password
-        n_battles: Number of ladder battles to play
-    """
-    # Create logger
     logger = CSVBattleLogger(f"battle_data/ladder_{username}.csv")
 
-    # Create custom strategy bot
     bot = CustomStrategyPlayer(
         battle_logger=logger,
         battle_format="gen8randombattle",
@@ -44,49 +26,33 @@ async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
         start_timer_on_battle_start=True,
     )
 
-    # ========================================================================
-    # CONFIGURE YOUR STRATEGY CHECKS HERE!
-    # ========================================================================
 
-    # Check 1: Strongly prefer super effective moves
     bot.add_check("super_effective", check_super_effective, priority=4)
 
-    # Check 2: Avoid not very effective moves OR switch
     bot.add_check("avoid_ineffective", check_avoid_ineffective, priority=3)
     bot.add_check("switch_bad_matchup", check_switch_on_bad_matchup, priority=3)
 
-    # Check 3: Prefer STAB moves
     bot.add_check("stab", check_stab_bonus, priority=2)
 
-    # Check 4: Apply offensive pressure with high damage
     bot.add_check("offensive_pressure", check_offensive_pressure, priority=2)
 
-    # Check 5: Consider base power
     bot.add_check("base_power", check_high_base_power, priority=1)
 
-    # Check 6: Prefer accurate moves
     bot.add_check("accuracy", check_high_accuracy, priority=1)
 
-    # Check 7: Try to inflict status
     bot.add_check("status", check_status_moves, priority=1)
 
-    # Check 8: Use stat boosting moves when safe
     bot.add_check("setup_on_resist", check_setup_on_resist, priority=2)
 
-    # Example custom check:
     def prefer_priority_moves(battle, move, target):
-        """Prefer moves with priority when opponent is low HP."""
         if target and move.priority > 0:
-            if target.current_hp_fraction < 0.3:  # Opponent below 30% HP
-                return 75  # High score for priority moves
+            if target.current_hp_fraction < 0.3:
+                return 75
         return 0
 
     bot.add_check("priority_finisher", prefer_priority_moves, priority=3)
 
-    # ========================================================================
 
-    # Uncomment to see move scoring details during battles:
-    # bot.debug = True
 
     print("="*60)
     print(f"Custom Strategy Bot - Ladder Mode")
@@ -100,10 +66,8 @@ async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
     print("="*60)
     print("\nSearching for ladder opponents...\n")
 
-    # Play on the ladder
     await bot.ladder(n_battles)
 
-    # Print results
     print("\n" + "="*60)
     print("LADDER RESULTS")
     print("="*60)
@@ -122,12 +86,10 @@ async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
 if __name__ == "__main__":
     import sys
 
-    # Default credentials
     USERNAME = "Bot_Naila"
     PASSWORD = "Naila"
     N_BATTLES = 10
 
-    # Parse command line arguments
     if len(sys.argv) > 1:
         USERNAME = sys.argv[1]
     if len(sys.argv) > 2:
@@ -145,5 +107,4 @@ if __name__ == "__main__":
     print(f"  Battles: {N_BATTLES}")
     print("="*60 + "\n")
 
-    # Run the bot
     asyncio.run(run_ladder_bot(USERNAME, PASSWORD, N_BATTLES))

@@ -1,8 +1,3 @@
-"""
-Logging player classes that record battle data for ML training.
-
-Supports both CSV and SQLite logging formats.
-"""
 import csv
 import sqlite3
 from datetime import datetime
@@ -14,19 +9,16 @@ from poke_env.player.battle_order import BattleOrder
 
 
 class BattleDataLogger:
-    """Base class for logging battle data to different formats."""
 
     def __init__(self, output_path: str):
         self.output_path = Path(output_path)
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
     def log_turn_data(self, turn_data: Dict[str, Any]):
-        """Log a single turn's data. To be implemented by subclasses."""
         raise NotImplementedError
 
 
 class CSVBattleLogger(BattleDataLogger):
-    """Logs battle data to CSV file."""
 
     def __init__(self, output_path: str):
         super().__init__(output_path)
@@ -42,76 +34,32 @@ class CSVBattleLogger(BattleDataLogger):
             'damage_dealt', 'fainted', 'won_battle'
         ]
 
-        # Create CSV file with headers if it doesn't exist
         if not self.output_path.exists():
             with open(self.output_path, 'w', newline='', encoding='utf-8') as f:
                 writer = csv.DictWriter(f, fieldnames=self.fieldnames)
                 writer.writeheader()
 
     def log_turn_data(self, turn_data: Dict[str, Any]):
-        """Append turn data to CSV file."""
         with open(self.output_path, 'a', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=self.fieldnames)
             writer.writerow(turn_data)
 
 
 class SQLiteBattleLogger(BattleDataLogger):
-    """Logs battle data to SQLite database."""
 
     def __init__(self, output_path: str):
         super().__init__(output_path)
         self._init_database()
 
     def _init_database(self):
-        """Initialize SQLite database with schema."""
         conn = sqlite3.connect(self.output_path)
         cursor = conn.cursor()
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS battle_turns (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                timestamp TEXT,
-                battle_tag TEXT,
-                turn INTEGER,
-                player_username TEXT,
-                active_pokemon TEXT,
-                active_hp REAL,
-                active_max_hp REAL,
-                active_hp_fraction REAL,
-                active_status TEXT,
-                active_atk INTEGER,
-                active_def INTEGER,
-                active_spa INTEGER,
-                active_spd INTEGER,
-                active_spe INTEGER,
-                opponent_pokemon TEXT,
-                opponent_hp REAL,
-                opponent_max_hp REAL,
-                opponent_hp_fraction REAL,
-                opponent_status TEXT,
-                opponent_atk INTEGER,
-                opponent_def INTEGER,
-                opponent_spa INTEGER,
-                opponent_spd INTEGER,
-                opponent_spe INTEGER,
-                selected_move TEXT,
-                selected_move_type TEXT,
-                selected_move_category TEXT,
-                selected_move_base_power INTEGER,
-                selected_move_accuracy REAL,
-                available_moves TEXT,
-                available_switches TEXT,
-                damage_dealt REAL,
-                fainted INTEGER,
-                won_battle INTEGER
-            )
-        ''')
 
         conn.commit()
         conn.close()
 
     def log_turn_data(self, turn_data: Dict[str, Any]):
-        """Insert turn data into SQLite database."""
         conn = sqlite3.connect(self.output_path)
         cursor = conn.cursor()
 
@@ -128,7 +76,6 @@ class SQLiteBattleLogger(BattleDataLogger):
 
 
 class LoggingPlayer(Player):
-    """Base player class that logs battle data during gameplay."""
 
     def __init__(self, battle_logger: BattleDataLogger, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -136,28 +83,23 @@ class LoggingPlayer(Player):
         self.previous_hp_data: Dict[str, Dict] = {}
 
     def choose_move(self, battle: AbstractBattle) -> BattleOrder:
-        """Override this in subclasses to implement move selection strategy."""
         raise NotImplementedError
 
     def _extract_turn_data(self, battle: AbstractBattle, selected_move: BattleOrder) -> Dict[str, Any]:
-        """Extract all relevant data from the current battle state."""
         active = battle.active_pokemon
         opponent = battle.opponent_active_pokemon
 
-        # Calculate damage dealt (difference from previous HP)
         battle_key = battle.battle_tag
         damage_dealt = 0.0
         if battle_key in self.previous_hp_data and opponent:
             prev_hp = self.previous_hp_data[battle_key].get('opponent_hp', opponent.current_hp)
             damage_dealt = prev_hp - opponent.current_hp
 
-        # Store current HP for next turn
         if battle_key not in self.previous_hp_data:
             self.previous_hp_data[battle_key] = {}
         if opponent:
             self.previous_hp_data[battle_key]['opponent_hp'] = opponent.current_hp
 
-        # Extract move information
         selected_move_name = None
         selected_move_type = None
         selected_move_category = None
@@ -166,14 +108,13 @@ class LoggingPlayer(Player):
 
         if hasattr(selected_move, 'order'):
             move = selected_move.order
-            if hasattr(move, 'id'):  # It's a Move object
+            if hasattr(move, 'id'):
                 selected_move_name = move.id
                 selected_move_type = str(move.type) if hasattr(move, 'type') else None
                 selected_move_category = str(move.category) if hasattr(move, 'category') else None
                 selected_move_base_power = move.base_power if hasattr(move, 'base_power') else None
                 selected_move_accuracy = move.accuracy if hasattr(move, 'accuracy') else None
 
-        # Compile turn data
         turn_data = {
             'timestamp': datetime.now().isoformat(),
             'battle_tag': battle.battle_tag,
@@ -214,7 +155,6 @@ class LoggingPlayer(Player):
         return turn_data
 
     def _log_battle_turn(self, battle: AbstractBattle, selected_move: BattleOrder):
-        """Log the current battle turn data."""
         try:
             turn_data = self._extract_turn_data(battle, selected_move)
             self.battle_logger.log_turn_data(turn_data)
@@ -223,22 +163,16 @@ class LoggingPlayer(Player):
 
 
 class LoggingRandomPlayer(LoggingPlayer, RandomPlayer):
-    """Random player that logs battle data."""
 
     def choose_move(self, battle: AbstractBattle) -> BattleOrder:
-        # Get random move from parent class
         move = self.choose_random_move(battle)
-        # Log the data
         self._log_battle_turn(battle, move)
         return move
 
 
 class LoggingMaxDamagePlayer(LoggingPlayer, MaxBasePowerPlayer):
-    """Max damage player that logs battle data."""
 
     def choose_move(self, battle: AbstractBattle) -> BattleOrder:
-        # Get max damage move from MaxBasePowerPlayer
         move = MaxBasePowerPlayer.choose_move(self, battle)
-        # Log the data
         self._log_battle_turn(battle, move)
         return move

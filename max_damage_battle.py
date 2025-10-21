@@ -5,17 +5,11 @@ LOCAL_SERVER = ServerConfiguration("ws://localhost:8000/showdown/websocket",
     "http://localhost:8000/action.php?")
 
 async def max_damage_battle():
-    """Pit two MaxBasePowerPlayer bots against each other.
-
-    Each bot always chooses the move with the highest base power available.
-    """
-    # Create first MaxBasePowerPlayer
     max_damage_player_1 = MaxBasePowerPlayer(
         battle_format="gen8randombattle",
         server_configuration=LOCAL_SERVER,
     )
 
-    # Create second MaxBasePowerPlayer
     max_damage_player_2 = MaxBasePowerPlayer(
         battle_format="gen8randombattle",
         server_configuration=LOCAL_SERVER,

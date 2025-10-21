@@ -1,24 +1,9 @@
-"""
-Max Damage Bot for LADDER battles on official Pokemon Showdown.
-
-This version connects to the official Pokemon Showdown server and plays on the ladder
-against real players using max base power move selection.
-"""
 import asyncio
 from poke_env import ShowdownServerConfiguration, AccountConfiguration
 from poke_env.player import MaxBasePowerPlayer
 
 
 async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
-    """
-    Run max damage bot on the official Pokemon Showdown ladder.
-
-    Args:
-        username: Your Pokemon Showdown username
-        password: Your Pokemon Showdown password
-        n_battles: Number of ladder battles to play
-    """
-    # Create max damage bot
     bot = MaxBasePowerPlayer(
         battle_format="gen8randombattle",
         server_configuration=ShowdownServerConfiguration,
@@ -36,10 +21,8 @@ async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
     print("="*60)
     print("\nSearching for ladder opponents...\n")
 
-    # Play on the ladder
     await bot.ladder(n_battles)
 
-    # Print results
     print("\n" + "="*60)
     print("LADDER RESULTS")
     print("="*60)
@@ -57,12 +40,10 @@ async def run_ladder_bot(username: str, password: str, n_battles: int = 10):
 if __name__ == "__main__":
     import sys
 
-    # Default credentials
     USERNAME = "Bot_Naila"
     PASSWORD = "Naila"
     N_BATTLES = 10
 
-    # Parse command line arguments
     if len(sys.argv) > 1:
         USERNAME = sys.argv[1]
     if len(sys.argv) > 2:
@@ -80,5 +61,4 @@ if __name__ == "__main__":
     print(f"  Battles: {N_BATTLES}")
     print("="*60 + "\n")
 
-    # Run the bot
     asyncio.run(run_ladder_bot(USERNAME, PASSWORD, N_BATTLES))

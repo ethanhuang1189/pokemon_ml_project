@@ -9,14 +9,11 @@ LOCAL_SERVER = ServerConfiguration(
 
 
 async def max_damage_battle_csv(n_battles: int = 100):
-    """Run max damage battles with CSV logging."""
     print("Starting max damage battles with CSV logging...")
 
-    # Create CSV loggers
     logger1 = CSVBattleLogger("battle_data/max_damage_player1.csv")
     logger2 = CSVBattleLogger("battle_data/max_damage_player2.csv")
 
-    # Create logging players
     player1 = LoggingMaxDamagePlayer(
         battle_logger=logger1,
         battle_format="gen8randombattle",
@@ -29,7 +26,6 @@ async def max_damage_battle_csv(n_battles: int = 100):
         server_configuration=LOCAL_SERVER,
     )
 
-    # Run battles
     await player1.battle_against(player2, n_battles=n_battles)
 
     print(f"\nBattles complete! Data logged to battle_data/")
@@ -38,14 +34,11 @@ async def max_damage_battle_csv(n_battles: int = 100):
 
 
 async def max_damage_battle_sqlite(n_battles: int = 100):
-    """Run max damage battles with SQLite logging."""
     print("Starting max damage battles with SQLite logging...")
 
-    # Create SQLite loggers
     logger1 = SQLiteBattleLogger("battle_data/max_damage_player1.db")
     logger2 = SQLiteBattleLogger("battle_data/max_damage_player2.db")
 
-    # Create logging players
     player1 = LoggingMaxDamagePlayer(
         battle_logger=logger1,
         battle_format="gen8randombattle",
@@ -58,7 +51,6 @@ async def max_damage_battle_sqlite(n_battles: int = 100):
         server_configuration=LOCAL_SERVER,
     )
 
-    # Run battles
     await player1.battle_against(player2, n_battles=n_battles)
 
     print(f"\nBattles complete! Data logged to battle_data/")
@@ -67,7 +59,6 @@ async def max_damage_battle_sqlite(n_battles: int = 100):
 
 
 if __name__ == "__main__":
-    # Choose logging format
     import sys
 
     if len(sys.argv) > 1 and sys.argv[1] == "sqlite":

@@ -1,6 +1,3 @@
-"""
-Script to run battles between different bots and analyze the results
-"""
 import asyncio
 import json
 from poke_env.player import RandomPlayer, MaxBasePowerPlayer
@@ -13,7 +10,6 @@ LOCAL_SERVER = ServerConfiguration(
 )
 
 async def run_bot_comparison(n_battles=50):
-    """Run battles between all bot combinations"""
 
     results = {
         "random_vs_maxdamage": {"p1_wins": 0, "p2_wins": 0},
@@ -23,7 +19,6 @@ async def run_bot_comparison(n_battles=50):
 
     print(f"Running {n_battles} battles for each matchup...\n")
 
-    # Random vs MaxDamage
     print("=== Random vs MaxDamage ===")
     random1 = RandomPlayer(battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
     maxdamage1 = MaxBasePowerPlayer(battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
@@ -38,7 +33,6 @@ async def run_bot_comparison(n_battles=50):
     await random1.close()
     await maxdamage1.close()
 
-    # Random vs Custom
     print("=== Random vs Custom Strategy ===")
     random2 = RandomPlayer(battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
     custom1 = CustomStrategyPlayer(battle_logger=None, battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
@@ -58,7 +52,6 @@ async def run_bot_comparison(n_battles=50):
     await random2.close()
     await custom1.close()
 
-    # MaxDamage vs Custom
     print("=== MaxDamage vs Custom Strategy ===")
     maxdamage2 = MaxBasePowerPlayer(battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
     custom2 = CustomStrategyPlayer(battle_logger=None, battle_format="gen9randombattle", server_configuration=LOCAL_SERVER, max_concurrent_battles=10)
@@ -78,7 +71,6 @@ async def run_bot_comparison(n_battles=50):
     await maxdamage2.close()
     await custom2.close()
 
-    # Save results
     with open('project_site/battle_results.json', 'w') as f:
         json.dump(results, f, indent=2)
 
